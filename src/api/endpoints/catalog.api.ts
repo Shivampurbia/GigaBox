@@ -62,6 +62,17 @@ export async function getCategories(signal?: AbortSignal): Promise<string[]> {
   return data.map((c) => c.slug);
 }
 
+export async function searchProducts(
+  searchTerm: string,
+  signal?: AbortSignal,
+): Promise<Product[]> {
+  const { data } = await apiClient.get<{ products: Product[] }>(
+    "/products/search",
+    { params: { q: searchTerm }, signal },
+  );
+  return data.products;
+}
+
 export async function getProduct(
   productId: number,
   signal?: AbortSignal,
