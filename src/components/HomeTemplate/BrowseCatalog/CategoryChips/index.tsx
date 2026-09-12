@@ -1,5 +1,7 @@
 // src/components/HomeTemplate/BrowseCatalog/CategoryChips/index.ts
-import { Pressable, ScrollView, StyleSheet, Text } from "react-native";
+import { ThemedText } from "@/components/themed-text";
+import { ThemedView } from "@/components/themed-view";
+import { Pressable, ScrollView, StyleSheet } from "react-native";
 
 interface Props {
   categories: string[];
@@ -15,23 +17,26 @@ export function CategoryChips({ categories, active, onSelect }: Props) {
       style={styles.scrollView}
       contentContainerStyle={styles.row}
     >
-      <Pressable
-        style={[styles.chip, active === null && styles.chipActive]}
-        onPress={() => onSelect(null)}
-      >
-        <Text style={active === null ? styles.textActive : styles.text}>
-          All
-        </Text>
+      <Pressable style={styles.chipPressable} onPress={() => onSelect(null)}>
+        <ThemedView
+          type={active === null ? "backgroundSelected" : "backgroundElement"}
+          style={styles.chip}
+        >
+          <ThemedText type="smallBold">All</ThemedText>
+        </ThemedView>
       </Pressable>
       {categories.map((cat) => (
         <Pressable
           key={cat}
-          style={[styles.chip, active === cat && styles.chipActive]}
+          style={styles.chipPressable}
           onPress={() => onSelect(cat)}
         >
-          <Text style={active === cat ? styles.textActive : styles.text}>
-            {cat}
-          </Text>
+          <ThemedView
+            type={active === cat ? "backgroundSelected" : "backgroundElement"}
+            style={styles.chip}
+          >
+            <ThemedText type="small">{cat}</ThemedText>
+          </ThemedView>
         </Pressable>
       ))}
     </ScrollView>
@@ -49,14 +54,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 8,
   },
+  chipPressable: {},
   chip: {
-    height: 32,
+    height: 38,
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 20,
-    backgroundColor: "#eee",
+    alignItems: "center",
+    justifyContent: "center",
   },
-  chipActive: { backgroundColor: "#111" },
-  text: { color: "#333", fontSize: 13 },
-  textActive: { color: "#fff", fontSize: 13 },
 });
