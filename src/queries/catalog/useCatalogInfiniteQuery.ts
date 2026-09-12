@@ -54,7 +54,6 @@ export function useCatalogInfiniteQuery(category: string | null) {
     enabled:
       isOnline !== null && (isOnline === false || onlineSessionId !== null),
     initialPageParam: 0,
-    staleTime: 0,
     getNextPageParam: (lastPage) => {
       const nextSkip = lastPage.skip + lastPage.limit;
       return nextSkip < lastPage.total ? nextSkip : undefined;

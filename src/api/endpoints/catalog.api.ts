@@ -66,6 +66,7 @@ export async function getProduct(
   productId: number,
   signal?: AbortSignal,
 ): Promise<Product> {
+  console.log("[catalog] getProduct", { productId, aborted: signal?.aborted });
   const { data } = await apiClient.get<Product>(`/products/${productId}`, {
     signal,
   });
