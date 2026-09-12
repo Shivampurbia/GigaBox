@@ -13,6 +13,8 @@ interface Props {
   onSelectCategory: (c: string | null) => void;
   onEndReached: () => void;
   isFetchingNextPage: boolean;
+  isRefetching: boolean;
+  refetch: () => void;
 }
 
 export function BrowseCatalog({
@@ -22,6 +24,8 @@ export function BrowseCatalog({
   onSelectCategory,
   onEndReached,
   isFetchingNextPage,
+  isRefetching,
+  refetch,
 }: Props) {
   return (
     <View style={{ flex: 1 }}>
@@ -36,6 +40,8 @@ export function BrowseCatalog({
         numColumns={2}
         onEndReachedThreshold={0.2}
         onEndReached={onEndReached}
+        refreshing={isRefetching}
+        onRefresh={refetch}
         ListFooterComponent={
           isFetchingNextPage ? (
             <View style={{ flexDirection: "row" }}>

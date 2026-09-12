@@ -29,7 +29,11 @@ export default function HomeScreen() {
   );
 
   if (catalogQuery.isPending || categoriesQuery.isPending) {
-    return <HomeTemplateSkeleton />;
+    return (
+      <SafeAreaView edges={["top", "left", "right"]} style={styles.container}>
+        <HomeTemplateSkeleton />
+      </SafeAreaView>
+    );
   }
 
   if (catalogQuery.isError || categoriesQuery.isError) {
@@ -67,6 +71,10 @@ export default function HomeScreen() {
             void catalogQuery.fetchNextPage();
           }
         }}
+        refetch={catalogQuery.refetch}
+        isRefetching={
+          catalogQuery.isFetching && !catalogQuery.isFetchingNextPage
+        }
         isFetchingNextPage={catalogQuery.isFetchingNextPage}
       />
       {catalogQuery.isFetching && !catalogQuery.isFetchingNextPage && (

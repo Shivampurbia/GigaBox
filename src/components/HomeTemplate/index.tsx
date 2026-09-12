@@ -10,6 +10,8 @@ interface Props {
   onSelectCategory: (c: string | null) => void;
   onEndReached: () => void;
   isFetchingNextPage: boolean;
+  refetch: () => void;
+  isRefetching: boolean;
 }
 
 export function HomeTemplate(props: Props) {
