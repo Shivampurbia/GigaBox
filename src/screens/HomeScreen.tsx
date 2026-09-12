@@ -1,27 +1,34 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import {
     ActivityIndicator,
     Pressable,
     StyleSheet,
-    Text,
-    View,
+    TextInput,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { HomeTemplate } from "@/components/HomeTemplate";
+import { SearchResults } from "@/components/HomeTemplate/SearchResults";
 import { HomeTemplateSkeleton } from "@/components/HomeTemplate/skeleton";
+import { ThemedText } from "@/components/themed-text";
+import { ThemedView } from "@/components/themed-view";
+import { useTheme } from "@/hooks/use-theme";
 import { useCatalogInfiniteQuery } from "@/queries/catalog/useCatalogInfiniteQuery";
 import { useCategoriesQuery } from "@/queries/catalog/useCategoriesQuery";
+import { useProductSearchQuery } from "@/queries/catalog/useProductSearchQuery";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { setCategory } from "@/store/slices/filtersSlice";
 
 export default function HomeScreen() {
+  const theme = useTheme();
+  const [searchTerm, setSearchTerm] = useState("");
   const dispatch = useAppDispatch();
   const activeCategory = useAppSelector(
     (state) => state.filters.activeCategory,
   );
   const catalogQuery = useCatalogInfiniteQuery(activeCategory);
   const categoriesQuery = useCategoriesQuery();
+  const searchQuery = useProductSearchQuery(searchTerm);
 
   const products = useMemo(
     () => catalogQuery.data?.pages.flatMap((page) => page.products) ?? [],
@@ -38,11 +45,11 @@ export default function HomeScreen() {
 
   if (catalogQuery.isError || categoriesQuery.isError) {
     return (
-      <SafeAreaView style={styles.stateContainer}>
-        <Text style={styles.stateTitle}>Could not load the catalog</Text>
-        <Text style={styles.stateMessage}>
+      <ThemedView style={styles.stateContainer}>
+        <ThemedText type="smallBold">Could not load the catalog</ThemedText>
+        <ThemedText themeColor="textSecondary">
           Check your connection and try again.
-        </Text>
+        </ThemedText>
         <Pressable
           style={styles.retryButton}
           onPress={() => {
@@ -50,37 +57,57 @@ export default function HomeScreen() {
             void categoriesQuery.refetch();
           }}
         >
-          <Text style={styles.retryText}>Try again</Text>
+          <ThemedView type="backgroundElement" style={styles.retrySurface}>
+            <ThemedText type="smallBold">Try again</ThemedText>
+          </ThemedView>
         </Pressable>
-      </SafeAreaView>
+      </ThemedView>
     );
   }
   return (
     <SafeAreaView edges={["top", "left", "right"]} style={styles.container}>
-      <HomeTemplate
-        products={products}
-        categories={categoriesQuery.data}
-        activeCategory={activeCategory}
-        onSelectCategory={(category) => dispatch(setCategory(category))}
-        onEndReached={() => {
-          if (
-            catalogQuery.hasNextPage &&
-            !catalogQuery.isFetchingNextPage &&
-            !catalogQuery.isFetching
-          ) {
-            void catalogQuery.fetchNextPage();
+      <ThemedView type="backgroundElement" style={styles.searchContainer}>
+        <TextInput
+          value={searchTerm}
+          onChangeText={setSearchTerm}
+          placeholder="Search products"
+          placeholderTextColor={theme.textSecondary}
+          returnKeyType="search"
+          style={[styles.searchInput, { color: theme.text }]}
+        />
+      </ThemedView>
+      {searchTerm.trim().length > 0 ? (
+        <SearchResults
+          products={searchQuery.data}
+          isPending={searchQuery.isPending}
+          isError={searchQuery.isError}
+        />
+      ) : (
+        <HomeTemplate
+          products={products}
+          categories={categoriesQuery.data}
+          activeCategory={activeCategory}
+          onSelectCategory={(category) => dispatch(setCategory(category))}
+          onEndReached={() => {
+            if (
+              catalogQuery.hasNextPage &&
+              !catalogQuery.isFetchingNextPage &&
+              !catalogQuery.isFetching
+            ) {
+              void catalogQuery.fetchNextPage();
+            }
+          }}
+          refetch={catalogQuery.refetch}
+          isRefetching={
+            catalogQuery.isFetching && !catalogQuery.isFetchingNextPage
           }
-        }}
-        refetch={catalogQuery.refetch}
-        isRefetching={
-          catalogQuery.isFetching && !catalogQuery.isFetchingNextPage
-        }
-        isFetchingNextPage={catalogQuery.isFetchingNextPage}
-      />
+          isFetchingNextPage={catalogQuery.isFetchingNextPage}
+        />
+      )}
       {catalogQuery.isFetching && !catalogQuery.isFetchingNextPage && (
-        <View style={styles.filterLoading}>
+        <ThemedView type="backgroundElement" style={styles.filterLoading}>
           <ActivityIndicator />
-        </View>
+        </ThemedView>
       )}
     </SafeAreaView>
   );
@@ -89,7 +116,16 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#ffffff",
+  },
+  searchContainer: {
+    marginHorizontal: 12,
+    marginBottom: 8,
+    borderRadius: 10,
+    paddingHorizontal: 12,
+  },
+  searchInput: {
+    height: 42,
+    fontSize: 16,
   },
   stateContainer: {
     flex: 1,
@@ -97,15 +133,20 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 24,
   },
-  stateTitle: { fontSize: 18, fontWeight: "600", color: "#111111" },
-  stateMessage: { marginTop: 8, color: "#666666" },
+  stateMessage: { marginTop: 8 },
   retryButton: {
     marginTop: 16,
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderRadius: 8,
-    backgroundColor: "#111111",
+    alignItems: "center",
   },
-  retryText: { color: "#ffffff", fontWeight: "600" },
-  filterLoading: { position: "absolute", top: 12, right: 12 },
+  retrySurface: { paddingHorizontal: 20, paddingVertical: 12, borderRadius: 8 },
+  filterLoading: {
+    position: "absolute",
+    top: 12,
+    right: 12,
+    borderRadius: 12,
+    padding: 4,
+  },
 });
