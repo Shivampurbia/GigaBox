@@ -3,6 +3,7 @@ import { Stack, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import {
     ActivityIndicator,
+    Dimensions,
     Pressable,
     ScrollView,
     StyleSheet,
@@ -10,23 +11,34 @@ import {
     View,
 } from "react-native";
 
+import { useTheme } from "@/hooks/use-theme";
 import { useProductQuery } from "@/queries/catalog/useProductQuery";
 
 export default function ProductDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const productId = Number(id);
   const [quantity, setQuantity] = useState(1);
+  const theme = useTheme();
   const productQuery = useProductQuery(productId);
 
   if (productQuery.isPending) {
-    return <ActivityIndicator style={styles.centered} />;
+    return (
+      <ActivityIndicator
+        color={theme.text}
+        style={[styles.centered, { backgroundColor: theme.background }]}
+      />
+    );
   }
 
   if (productQuery.isError || !productQuery.data) {
     return (
-      <View style={styles.centered}>
-        <Text style={styles.errorTitle}>Product unavailable</Text>
-        <Text style={styles.errorMessage}>We could not load this product.</Text>
+      <View style={[styles.centered, { backgroundColor: theme.background }]}>
+        <Text style={[styles.errorTitle, { color: theme.text }]}>
+          Product unavailable
+        </Text>
+        <Text style={[styles.errorMessage, { color: theme.textSecondary }]}>
+          We could not load this product.
+        </Text>
       </View>
     );
   }
@@ -35,7 +47,13 @@ export default function ProductDetailsScreen() {
   const maxQuantity = Math.max(product.stock, 1);
 
   return (
-    <ScrollView contentContainerStyle={styles.content}>
+    <ScrollView
+      style={{ backgroundColor: theme.background }}
+      contentContainerStyle={[
+        styles.content,
+        { backgroundColor: theme.background },
+      ]}
+    >
       <Stack.Screen options={{ title: product.title }} />
       <ScrollView
         horizontal
@@ -47,28 +65,40 @@ export default function ProductDetailsScreen() {
           <Image
             key={image}
             source={{ uri: image }}
-            style={styles.image}
+            style={[styles.image, { backgroundColor: theme.backgroundElement }]}
             contentFit="cover"
           />
         ))}
       </ScrollView>
 
-      <Text style={styles.category}>{product.category}</Text>
-      <Text style={styles.title}>{product.title}</Text>
-      <Text style={styles.price}>${product.price.toFixed(2)}</Text>
-      <Text style={styles.description}>{product.description}</Text>
+      <Text style={[styles.category, { color: theme.textSecondary }]}>
+        {product.category}
+      </Text>
+      <Text style={[styles.title, { color: theme.text }]}>{product.title}</Text>
+      <Text style={[styles.price, { color: theme.text }]}>
+        ${product.price.toFixed(2)}
+      </Text>
+      <Text style={[styles.description, { color: theme.textSecondary }]}>
+        {product.description}
+      </Text>
 
       <View style={styles.quantityRow}>
-        <Text style={styles.quantityLabel}>Quantity</Text>
-        <View style={styles.stepper}>
+        <Text style={[styles.quantityLabel, { color: theme.text }]}>
+          Quantity
+        </Text>
+        <View
+          style={[styles.stepper, { borderColor: theme.backgroundSelected }]}
+        >
           <Pressable
             accessibilityLabel="Decrease quantity"
             onPress={() => setQuantity((current) => Math.max(1, current - 1))}
             style={styles.stepperButton}
           >
-            <Text style={styles.stepperText}>-</Text>
+            <Text style={[styles.stepperText, { color: theme.text }]}>-</Text>
           </Pressable>
-          <Text style={styles.quantity}>{quantity}</Text>
+          <Text style={[styles.quantity, { color: theme.text }]}>
+            {quantity}
+          </Text>
           <Pressable
             accessibilityLabel="Increase quantity"
             onPress={() =>
@@ -76,13 +106,18 @@ export default function ProductDetailsScreen() {
             }
             style={styles.stepperButton}
           >
-            <Text style={styles.stepperText}>+</Text>
+            <Text style={[styles.stepperText, { color: theme.text }]}>+</Text>
           </Pressable>
         </View>
       </View>
 
-      <Pressable style={styles.cartButton} onPress={() => {}}>
-        <Text style={styles.cartButtonText}>Add {quantity} to cart</Text>
+      <Pressable
+        style={[styles.cartButton, { backgroundColor: theme.text }]}
+        onPress={() => {}}
+      >
+        <Text style={[styles.cartButtonText, { color: theme.background }]}>
+          Add {quantity} to cart
+        </Text>
       </Pressable>
     </ScrollView>
   );
@@ -91,7 +126,11 @@ export default function ProductDetailsScreen() {
 const styles = StyleSheet.create({
   content: { paddingBottom: 32 },
   gallery: { width: "100%", height: 320 },
-  image: { width: 390, height: 320, backgroundColor: "#f2f2f2" },
+  image: {
+    width: Dimensions.get("window").width,
+    height: 320,
+    backgroundColor: "#f2f2f2",
+  },
   category: {
     marginTop: 20,
     marginHorizontal: 20,
