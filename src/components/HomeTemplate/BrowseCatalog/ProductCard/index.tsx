@@ -1,9 +1,11 @@
 // src/components/HomeTemplate/BrowseCatalog/ProductCard/index.ts
+import { Image } from "expo-image";
 import { router } from "expo-router";
-import { Image, Pressable, StyleSheet, Text } from "react-native";
+import { Pressable, StyleSheet, Text } from "react-native";
 import { Product } from "../../../../api/types/product.types";
 
 export function ProductCard({ product }: { product: Product }) {
+  console.log("Rendering ProductCard for product:", product.title);
   return (
     <Pressable
       style={({ pressed }) => [styles.card, pressed && styles.pressed]}
@@ -14,7 +16,13 @@ export function ProductCard({ product }: { product: Product }) {
         })
       }
     >
-      <Image source={{ uri: product.thumbnail }} style={styles.image} />
+      <Image
+        source={{ uri: product.thumbnail }}
+        style={styles.image}
+        cachePolicy={"memory-disk"}
+        transition={150}
+        recyclingKey={String(product.id)}
+      />
       <Text numberOfLines={1} style={styles.title}>
         {product.title}
       </Text>
