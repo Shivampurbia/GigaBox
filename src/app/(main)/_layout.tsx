@@ -1,5 +1,5 @@
-import AppTabs from "@/components/app-tabs";
+import MainNavigator from "@/navigation/MainNavigator";
 
 export default function MainLayout() {
-  return <AppTabs />;
+  return <MainNavigator />;
 }
