@@ -1,11 +1,12 @@
 // src/components/HomeTemplate/BrowseCatalog/ProductCard/index.ts
+import { ThemedText } from "@/components/themed-text";
+import { ThemedView } from "@/components/themed-view";
 import { Image } from "expo-image";
 import { router } from "expo-router";
-import { Pressable, StyleSheet, Text } from "react-native";
+import { Pressable, StyleSheet } from "react-native";
 import { Product } from "../../../../api/types/product.types";
 
 export function ProductCard({ product }: { product: Product }) {
-  console.log("Rendering ProductCard for product:", product.title);
   return (
     <Pressable
       style={({ pressed }) => [styles.card, pressed && styles.pressed]}
@@ -16,17 +17,19 @@ export function ProductCard({ product }: { product: Product }) {
         })
       }
     >
-      <Image
-        source={{ uri: product.thumbnail }}
-        style={styles.image}
-        cachePolicy={"memory-disk"}
-        transition={150}
-        recyclingKey={String(product.id)}
-      />
-      <Text numberOfLines={1} style={styles.title}>
-        {product.title}
-      </Text>
-      <Text style={styles.price}>${product.price}</Text>
+      <ThemedView type="backgroundElement" style={styles.surface}>
+        <Image
+          source={{ uri: product.thumbnail }}
+          style={styles.image}
+          cachePolicy={"memory-disk"}
+          transition={150}
+          recyclingKey={String(product.id)}
+        />
+        <ThemedText numberOfLines={1} style={styles.title}>
+          {product.title}
+        </ThemedText>
+        <ThemedText style={styles.price}>${product.price}</ThemedText>
+      </ThemedView>
     </Pressable>
   );
 }
@@ -37,10 +40,10 @@ const styles = StyleSheet.create({
     margin: 6,
     borderRadius: 12,
     overflow: "hidden",
-    backgroundColor: "#fff",
   },
+  surface: { flex: 1 },
   pressed: { opacity: 0.75 },
-  image: { width: "100%", aspectRatio: 1, backgroundColor: "#f2f2f2" },
+  image: { width: "100%", aspectRatio: 1 },
   title: { fontSize: 13, marginTop: 4, marginHorizontal: 6 },
   price: {
     fontSize: 14,

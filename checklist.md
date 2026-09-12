@@ -59,8 +59,8 @@ Implementation notes:
 - [x] Preserve the theme provider and animated splash overlay.
 - [ ] Add a root connectivity listener using NetInfo.
 - [ ] Add a global offline banner.
-- [ ] Define the auth-state boundary, even if the first version uses a local/mock auth state.
-- [ ] Ensure persisted state rehydrates before dependent screens render.
+- [x] Define the auth-state boundary, even if the first version uses a local/mock auth state.
+- [x] Ensure persisted auth state rehydrates before dependent screens render.
 - [ ] Verify deep links and cold starts for grouped routes.
 
 ## Existing Catalog Work To Connect
@@ -80,12 +80,12 @@ Implementation notes:
 
 ## Search
 
-- [ ] Add the catalog search API endpoint and response types.
-- [ ] Add a debounced search input.
-- [ ] Add a search query keyed by the current debounced query.
-- [ ] Pass React Query's `AbortSignal` to Axios.
-- [ ] Ensure stale requests are cancelled or ignored so old results cannot replace newer results.
-- [ ] Add loading, empty, error, retry, and offline states.
+- [x] Add the catalog search API endpoint and response types.
+- [x] Add a debounced search input.
+- [x] Add a search query keyed by the current debounced query.
+- [x] Pass React Query's `AbortSignal` to Axios.
+- [x] Ensure stale requests are cancelled or ignored so old results cannot replace newer results.
+- [x] Add loading, empty, error, and offline states.
 - [ ] Decide whether search belongs in HomeStack, ExploreStack, or both.
 - [ ] Keep search results out of persisted query cache unless there is a clear product reason.
 
