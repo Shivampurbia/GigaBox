@@ -103,16 +103,16 @@ Implementation notes:
 
 ## Cart and Checkout
 
-- [ ] Add a cart slice with product, quantity, and price data.
-- [ ] Add increment, decrement, direct quantity edit, and remove actions.
-- [ ] Persist cart state through app restarts.
+- [x] Add a cart slice with product, quantity, and price data.
+- [x] Add increment, decrement, direct quantity edit, and remove actions.
+- [x] Persist cart state through app restarts.
 - [ ] Add cart badge/count access from the main app UI.
-- [ ] Add subtotal calculation.
-- [ ] Define the delivery-fee threshold and fee values as constants.
-- [ ] Add free delivery above the configured threshold.
-- [ ] Add checkout validation for an empty cart and invalid quantities.
-- [ ] Create a local mock order on checkout.
-- [ ] Persist the active order and order history locally.
+- [x] Add subtotal calculation.
+- [x] Define the delivery-fee threshold and fee values as constants.
+- [x] Add free delivery above the configured threshold.
+- [x] Add checkout validation for an empty cart and invalid quantities.
+- [x] Create a local mock order on checkout.
+- [x] Persist the active order and order history locally.
 - [ ] Navigate to tracking after successful checkout.
 
 ## Live Order Tracking

@@ -29,6 +29,11 @@ export default function MainNavigator() {
           renderingMode="template"
         />
       </NativeTabs.Trigger>
+
+      <NativeTabs.Trigger name="cart">
+        <NativeTabs.Trigger.Label>Cart</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="cart" md="shopping_cart" />
+      </NativeTabs.Trigger>
     </NativeTabs>
   );
 }

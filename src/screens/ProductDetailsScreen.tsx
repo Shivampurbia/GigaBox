@@ -13,11 +13,20 @@ import { AddToCartButton } from "@/components/cart/AddToCartButton";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { useProductQuery } from "@/queries/catalog/useProductQuery";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { selectCartItemById } from "@/store/selectors";
+import {
+    addToCart,
+    decrementQuantity,
+    incrementQuantity,
+} from "@/store/slices/cartSlice";
 
 export default function ProductDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const productId = Number(id);
   const [quantity, setQuantity] = useState(1);
+  const dispatch = useAppDispatch();
+  const cartItem = useAppSelector(selectCartItemById(productId));
   const productQuery = useProductQuery(productId);
 
   if (productQuery.isPending) {
@@ -41,6 +50,22 @@ export default function ProductDetailsScreen() {
 
   const product = productQuery.data;
   const maxQuantity = Math.max(product.stock, 1);
+  const isOutOfStock = product.stock === 0;
+  const displayedQuantity = cartItem?.quantity ?? quantity;
+  const decreaseQuantity = () => {
+    if (cartItem) {
+      dispatch(decrementQuantity(product.id));
+      return;
+    }
+    setQuantity((current) => Math.max(1, current - 1));
+  };
+  const increaseQuantity = () => {
+    if (cartItem) {
+      dispatch(incrementQuantity(product.id));
+      return;
+    }
+    setQuantity((current) => Math.min(maxQuantity, current + 1));
+  };
 
   return (
     <ThemedView style={styles.screen}>
@@ -65,6 +90,15 @@ export default function ProductDetailsScreen() {
         <ThemedText themeColor="textSecondary" style={styles.category}>
           {product.category}
         </ThemedText>
+        <ThemedView
+          type={isOutOfStock ? "backgroundElement" : "backgroundSelected"}
+          style={styles.statusBadge}
+        >
+          <ThemedText type="smallBold">
+            {product.availabilityStatus ??
+              (isOutOfStock ? "Out of Stock" : "In Stock")}
+          </ThemedText>
+        </ThemedView>
         <ThemedText type="subtitle" style={styles.title}>
           {product.title}
         </ThemedText>
@@ -75,24 +109,34 @@ export default function ProductDetailsScreen() {
           {product.description}
         </ThemedText>
 
+        {!!product.tags?.length && (
+          <ThemedView style={styles.tagsRow}>
+            {product.tags.map((tag) => (
+              <ThemedView key={tag} type="backgroundElement" style={styles.tag}>
+                <ThemedText type="small">#{tag}</ThemedText>
+              </ThemedView>
+            ))}
+          </ThemedView>
+        )}
+
         <ThemedView style={styles.quantityRow}>
           <ThemedText type="smallBold">Quantity</ThemedText>
           <ThemedView type="backgroundElement" style={styles.stepper}>
             <Pressable
               accessibilityLabel="Decrease quantity"
-              onPress={() => setQuantity((current) => Math.max(1, current - 1))}
+              onPress={decreaseQuantity}
+              disabled={isOutOfStock}
               style={styles.stepperButton}
             >
               <ThemedText type="smallBold">-</ThemedText>
             </Pressable>
             <ThemedText type="smallBold" style={styles.quantity}>
-              {quantity}
+              {displayedQuantity}
             </ThemedText>
             <Pressable
               accessibilityLabel="Increase quantity"
-              onPress={() =>
-                setQuantity((current) => Math.min(maxQuantity, current + 1))
-              }
+              onPress={increaseQuantity}
+              disabled={isOutOfStock}
               style={styles.stepperButton}
             >
               <ThemedText type="smallBold">+</ThemedText>
@@ -100,7 +144,39 @@ export default function ProductDetailsScreen() {
           </ThemedView>
         </ThemedView>
 
-        <AddToCartButton quantity={quantity} />
+        <AddToCartButton
+          quantity={displayedQuantity}
+          isAdded={Boolean(cartItem)}
+          disabled={isOutOfStock}
+          onAdd={() =>
+            dispatch(addToCart({ product, quantity: displayedQuantity }))
+          }
+        />
+
+        {!!product.reviews?.length && (
+          <ThemedView style={styles.reviewsSection}>
+            <ThemedText type="subtitle" style={styles.sectionTitle}>
+              Reviews
+            </ThemedText>
+            {product.reviews.map((review) => (
+              <ThemedView
+                key={`${review.reviewerEmail}-${review.date}`}
+                type="backgroundElement"
+                style={styles.review}
+              >
+                <ThemedView style={styles.reviewHeader}>
+                  <ThemedText type="smallBold">
+                    {review.reviewerName}
+                  </ThemedText>
+                  <ThemedText type="smallBold">{review.rating}/5</ThemedText>
+                </ThemedView>
+                <ThemedText themeColor="textSecondary">
+                  {review.comment}
+                </ThemedText>
+              </ThemedView>
+            ))}
+          </ThemedView>
+        )}
       </ScrollView>
     </ThemedView>
   );
@@ -108,7 +184,7 @@ export default function ProductDetailsScreen() {
 
 const styles = StyleSheet.create({
   screen: { flex: 1 },
-  content: { paddingBottom: 32 },
+  content: { paddingBottom: 120 },
   gallery: { width: "100%", height: 320 },
   image: {
     width: Dimensions.get("window").width,
@@ -118,6 +194,14 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginHorizontal: 20,
     textTransform: "uppercase",
+  },
+  statusBadge: {
+    alignSelf: "flex-start",
+    marginTop: 12,
+    marginHorizontal: 20,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 6,
   },
   title: {
     marginTop: 8,
@@ -132,6 +216,14 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     lineHeight: 22,
   },
+  tagsRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+    marginTop: 16,
+    marginHorizontal: 20,
+  },
+  tag: { paddingHorizontal: 10, paddingVertical: 6, borderRadius: 6 },
   quantityRow: {
     marginTop: 24,
     marginHorizontal: 20,
@@ -150,6 +242,15 @@ const styles = StyleSheet.create({
     height: 40,
     alignItems: "center",
     justifyContent: "center",
+  },
+  reviewsSection: { marginTop: 28, marginHorizontal: 20, gap: 10 },
+  sectionTitle: { fontSize: 22 },
+  review: { padding: 12, borderRadius: 8, gap: 6 },
+  reviewHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    padding: 0,
+    backgroundColor: "transparent",
   },
   quantity: {
     minWidth: 32,
