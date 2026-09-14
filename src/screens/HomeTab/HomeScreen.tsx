@@ -41,6 +41,9 @@ export default function HomeScreen() {
   useEffect(() => {
     const subscription = addNotificationResponseReceivedListener((response) => {
       const { productId } = response.notification.request.content.data;
+      if (!productId) {
+        return;
+      }
       navigation.navigate("ProductDetails", { productId: productId });
     });
 
