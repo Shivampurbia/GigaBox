@@ -1,56 +1,79 @@
-# Welcome to your Expo app 👋
+# Grocery Delivery App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
-
-## Get started
-
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## Setup
 
 ```bash
-npm run reset-project
+# install dependencies
+npm install
+
+# install native/Expo-matched packages (if not already installed)
+npx expo install @react-navigation/native @react-navigation/native-stack @react-navigation/bottom-tabs
+npx expo install react-native-screens react-native-safe-area-context
+npx expo install @shopify/flash-list react-native-reanimated react-native-gesture-handler
+npx expo install react-native-maps expo-image @react-native-async-storage/async-storage
+npx expo install @react-native-community/netinfo expo-notifications
+
+# requires a dev build (react-native-maps and local notifications don't fully work in Expo Go)
+npx expo prebuild --clean
+npx expo run:android   # or: npx expo run:ios
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Add a Google Maps API key in `app.json` under `android.config.googleMaps.apiKey` before
+running on Android — the map screen will crash without it.
 
-### Other setup steps
+## Architecture overview
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+- **TypeScript** throughout.
+- **State split:** Redux Toolkit for client state (cart, filters, network status, tracking
+  ticker). TanStack Query for all server state (catalog, search, product details) —
+  including caching and offline persistence via `persistQueryClient` + `AsyncStorage`.
+- **Component structure:** atomic-design-style, but scoped per screen rather than global
+  buckets — each page has its own template folder, with organism/molecule/atom components
+  nested inside based on where they're used (e.g.
+  `components/HomeTemplate/BrowseCatalog/ProductCard/`). Shared components live in
+  `components/common/`. Each level has a matching `skeleton.tsx`.
+- **Data flow:** pages own queries and Redux selectors; templates arrange layout and pass
+  data down; atoms are pure/prop-driven. `AddToCartButton` is the one exception that
+  dispatches to Redux directly.
+- **Navigation:** React Navigation — 3 bottom tabs (Home, Search, Cart), each with its own
+  native stack. Cart → Checkout → Tracking is a push flow within the Cart stack, using
+  `replace()` after order placement so the user can't navigate back into a completed
+  checkout.
+- **Catalog API:** [dummyjson.com](https://dummyjson.com) for products, search, and
+  pagination.
+- **List performance:** FlashList (cell recycling) + `expo-image` with `recyclingKey` for
+  caching — see `PERFORMANCE.md` for details.
 
-## Learn more
+## Assumptions
 
-To learn more about developing your project with Expo, look at the following resources:
+- Checkout is fully mocked — fake delivery address and payment method selection, no real
+  payment processing.
+- "Live" order tracking is a local simulation (a timestamp-driven ticker), not a real
+  delivery/courier backend.
+- DummyJSON is treated as the full catalog source of truth; no separate backend.
+- Push/local notifications are used for order status changes, not a real push service.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## What I'd do next with more time
 
-## Join the community
+- Replace the mocked courier ticker with a structure that could plug into a real
+  WebSocket/push-based tracking backend.
+- Expand offline support beyond catalog browsing — e.g. queue cart/order actions made while
+  offline and sync on reconnect.
+- Add proper form validation on the checkout address fields.
+- Tune FlashList/image performance numbers with real profiling data on a low-end device.
 
-Join our community of developers creating universal apps.
+## Notification deep-linking
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Added a local scheduled notification for deep-linking: a bell icon on the Product Details
+screen schedules a notification (fires 5 seconds after tapping) carrying the product ID as
+payload. Tapping the notification navigates back into that specific product's details
+screen, handling both warm-app taps and cold-start launches from a killed state.
+
+## AI tools used
+
+- **Claude** — used for syntax help and bug fixing, and for searching library docs
+  (`expo-notifications`, `react-native-maps`) when hitting errors like missing notification
+  channels or the Android Google Maps API key crash. Mainly used it for the local delivery
+  tracking simulation logic. Also used it to generate a simple cart icon asset.
+- **GitHub Copilot** — inline code generation for repetitive component scaffolding (e.g.
+  checkout screen sections) based on prompts describing the existing patterns to follow.
