@@ -1,6 +1,13 @@
-import axios from "axios";
+import { create } from "axios";
 
-export const apiClient = axios.create({
+// const token = getTokenFromStorage();
+
+export const apiClient = create({
   baseURL: "https://dummyjson.com",
   timeout: 10000,
+  headers: {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+    // Authorization: `Bearer ${token}`
+  },
 });
