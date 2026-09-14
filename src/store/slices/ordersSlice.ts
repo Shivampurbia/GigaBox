@@ -9,7 +9,7 @@ export interface LocalOrder {
   deliveryFee: number;
   total: number;
   createdAt: string;
-  status: "PLACED";
+  status: "PLACED" | "PACKED" | "OUT_FOR_DELIVERY" | "DELIVERED";
 }
 
 interface OrdersState {

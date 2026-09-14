@@ -6,6 +6,7 @@ import { persistReducer, persistStore } from "redux-persist";
 import cartReducer from "./slices/cartSlice";
 import filtersReducer from "./slices/filtersSlice";
 import ordersReducer from "./slices/ordersSlice";
+import trackingReducer from "./slices/trackingSlice";
 
 const cartPersistConfig: PersistConfig<ReturnType<typeof cartReducer>> = {
   key: "cart",
@@ -15,11 +16,17 @@ const ordersPersistConfig: PersistConfig<ReturnType<typeof ordersReducer>> = {
   key: "orders",
   storage: AsyncStorage,
 };
+const trackingPersistConfig: PersistConfig<ReturnType<typeof trackingReducer>> =
+  {
+    key: "tracking",
+    storage: AsyncStorage,
+  };
 
 const rootReducer = combineReducers({
   filters: filtersReducer,
   cart: persistReducer(cartPersistConfig, cartReducer),
   orders: persistReducer(ordersPersistConfig, ordersReducer),
+  tracking: persistReducer(trackingPersistConfig, trackingReducer),
 });
 
 export const store = configureStore({

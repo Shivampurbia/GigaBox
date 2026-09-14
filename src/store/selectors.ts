@@ -16,3 +16,6 @@ export const selectCartDeliveryFee = (state: RootState) =>
   selectCartSubtotal(state) >= FREE_DELIVERY_THRESHOLD ? 0 : DELIVERY_FEE;
 export const selectCartTotal = (state: RootState) =>
   selectCartSubtotal(state) + selectCartDeliveryFee(state);
+export const selectTrackingByOrderId =
+  (orderId: string) => (state: RootState) =>
+    state.tracking.byOrderId[orderId];

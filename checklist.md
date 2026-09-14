@@ -117,19 +117,19 @@ Implementation notes:
 
 ## Live Order Tracking
 
-- [ ] Define typed order and tracking status models.
-- [ ] Implement the status progression:
-  - [ ] `PLACED`
-  - [ ] `PACKED`
-  - [ ] `OUT_FOR_DELIVERY`
-  - [ ] `DELIVERED`
-- [ ] Implement a local ticker/mock socket emitting every 2-3 seconds.
-- [ ] Emit courier coordinates with each tracking update.
-- [ ] Stop the ticker after delivery or when the order is no longer active.
-- [ ] Render the courier and route state with `react-native-maps`.
-- [ ] Add visible status progression and estimated delivery information.
-- [ ] Persist the last tracking status, coordinates, and timestamp.
-- [ ] Recalculate progression after backgrounding or app restart instead of resetting it.
+- [x] Define typed order and tracking status models.
+- [x] Implement the status progression:
+  - [x] `PLACED`
+  - [x] `PACKED`
+  - [x] `OUT_FOR_DELIVERY`
+  - [x] `DELIVERED`
+- [x] Implement a local ticker/mock socket emitting every 2-3 seconds.
+- [x] Emit courier coordinates with each tracking update.
+- [x] Stop the ticker after delivery or when the order is no longer active.
+- [x] Render the courier and route state with `react-native-maps`.
+- [x] Add visible status progression and last-update information.
+- [x] Persist the last tracking status, coordinates, and timestamp.
+- [x] Recalculate progression after backgrounding or app restart instead of resetting it.
 - [ ] Handle tracking when the device is offline.
 
 ## Offline and Error Handling

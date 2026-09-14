@@ -1,11 +1,17 @@
+import { router } from "expo-router";
 import { useMemo, useState } from "react";
 
 import { CheckoutTemplate } from "@/components/CheckoutTemplate";
 import { DELIVERY_FEE, FREE_DELIVERY_THRESHOLD } from "@/constants/cart";
-import { useAppSelector } from "@/store/hooks";
+import { createInitialTracking } from "@/services/delivery/deliverySimulation";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { selectCartItems } from "@/store/selectors";
+import { clearCart } from "@/store/slices/cartSlice";
+import { createOrder } from "@/store/slices/ordersSlice";
+import { startTracking } from "@/store/slices/trackingSlice";
 
 export default function CheckoutScreen() {
+  const dispatch = useAppDispatch();
   const items = useAppSelector(selectCartItems);
   const [selectedPayment, setSelectedPayment] = useState("Cash on Delivery");
   const subtotal = useMemo(
@@ -16,7 +22,23 @@ export default function CheckoutScreen() {
   const total = subtotal + deliveryFee;
 
   const onPlaceOrder = () => {
-    // Placeholder until the order-creation mutation is connected.
+    if (!items.length) return;
+
+    const orderId = `order-${Date.now()}`;
+    dispatch(
+      createOrder({
+        id: orderId,
+        items,
+        subtotal,
+        deliveryFee,
+        total,
+        createdAt: new Date().toISOString(),
+        status: "PLACED",
+      }),
+    );
+    dispatch(startTracking(createInitialTracking(orderId)));
+    dispatch(clearCart());
+    router.replace(`/cart/tracking/${orderId}`);
   };
 
   return (
