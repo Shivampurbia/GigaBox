@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { StyleSheet, TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -9,11 +9,15 @@ import { ScreenState } from "@/components/ScreenState";
 import { ThemedView } from "@/components/themed-view";
 import { useConnectivity } from "@/connectivity/ConnectivityProvider";
 import { useTheme } from "@/hooks/use-theme";
+import { HomeStackParamList } from "@/navigation/types";
 import { useCatalogInfiniteQuery } from "@/queries/catalog/useCatalogInfiniteQuery";
 import { useCategoriesQuery } from "@/queries/catalog/useCategoriesQuery";
 import { useProductSearchQuery } from "@/queries/catalog/useProductSearchQuery";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { setCategory } from "@/store/slices/filtersSlice";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { addNotificationResponseReceivedListener } from "expo-notifications";
 
 export default function HomeScreen() {
   const theme = useTheme();
@@ -31,6 +35,17 @@ export default function HomeScreen() {
     () => catalogQuery.data?.pages.flatMap((page) => page.products) ?? [],
     [catalogQuery.data],
   );
+  const navigation =
+    useNavigation<NativeStackNavigationProp<HomeStackParamList>>();
+
+  useEffect(() => {
+    const subscription = addNotificationResponseReceivedListener((response) => {
+      const { productId } = response.notification.request.content.data;
+      navigation.navigate("ProductDetails", { productId: productId });
+    });
+
+    return () => subscription.remove(); // correctly removes the SAME subscription now
+  }, []);
 
   if (catalogQuery.isPending || categoriesQuery.isPending) {
     if (!isOnline) {

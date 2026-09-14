@@ -10,6 +10,7 @@ import { AnimatedSplashOverlay } from "@/components/animated-icon";
 import { OfflineBanner } from "@/components/OfflineBanner";
 import { ConnectivityProvider } from "@/connectivity/ConnectivityProvider";
 import { Colors } from "@/constants/theme";
+
 import RootNavigator from "@/navigation/RootNavigator";
 import { queryClient } from "@/queries/queryClient";
 import { prepareDeliveryNotifications } from "@/services/delivery/deliveryNotification";

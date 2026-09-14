@@ -1,7 +1,14 @@
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { Image } from "expo-image";
 import { useState } from "react";
-import { Dimensions, Pressable, ScrollView, StyleSheet } from "react-native";
+import {
+  Dimensions,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 import { AddToCartButton } from "@/components/cart/AddToCartButton";
 import { ScreenState } from "@/components/ScreenState";
@@ -13,10 +20,15 @@ import { useProductQuery } from "@/queries/catalog/useProductQuery";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { selectCartItemById } from "@/store/selectors";
 import {
-    addToCart,
-    decrementQuantity,
-    incrementQuantity,
+  addToCart,
+  decrementQuantity,
+  incrementQuantity,
 } from "@/store/slices/cartSlice";
+import {
+  SchedulableTriggerInputTypes,
+  scheduleNotificationAsync,
+} from "expo-notifications";
+import BellNotificationIcon from "../../assets/svg/Bell";
 
 type Props = NativeStackScreenProps<HomeStackParamList, "ProductDetails">;
 
@@ -70,6 +82,25 @@ export default function ProductDetailsScreen({ navigation, route }: Props) {
     setQuantity((current) => Math.min(maxQuantity, current + 1));
   };
 
+  const handleBellPress = async () => {
+    //schedule for after 5 seconds with product it
+    await scheduleNotificationAsync({
+      content: {
+        title: "Product Alert",
+        body: `Check out the product: ${product.title}`,
+        priority: "high",
+        data: { productId: product.id },
+      },
+      trigger: {
+        type: SchedulableTriggerInputTypes.DATE,
+        date: new Date(Date.now() + 5000),
+        channelId: "default",
+      },
+    });
+
+    // Handle bell icon press action here
+  };
+
   return (
     <ThemedView style={styles.screen}>
       <ScrollView contentContainerStyle={styles.content}>
@@ -92,15 +123,21 @@ export default function ProductDetailsScreen({ navigation, route }: Props) {
         <ThemedText themeColor="textSecondary" style={styles.category}>
           {product.category}
         </ThemedText>
-        <ThemedView
-          type={isOutOfStock ? "backgroundElement" : "backgroundSelected"}
-          style={styles.statusBadge}
-        >
-          <ThemedText type="smallBold">
-            {product.availabilityStatus ??
-              (isOutOfStock ? "Out of Stock" : "In Stock")}
-          </ThemedText>
-        </ThemedView>
+        <View style={styles.statusRow}>
+          <ThemedView
+            type={isOutOfStock ? "backgroundElement" : "backgroundSelected"}
+            style={styles.statusBadge}
+          >
+            <ThemedText type="smallBold">
+              {product.availabilityStatus ??
+                (isOutOfStock ? "Out of Stock" : "In Stock")}
+            </ThemedText>
+            {/* bell icon */}
+          </ThemedView>
+          <TouchableOpacity onPress={handleBellPress}>
+            <BellNotificationIcon size={34} style={styles.bellIcon} />
+          </TouchableOpacity>
+        </View>
         <ThemedText type="subtitle" style={styles.title}>
           {product.title}
         </ThemedText>
@@ -257,5 +294,18 @@ const styles = StyleSheet.create({
   quantity: {
     minWidth: 32,
     textAlign: "center",
+  },
+  statusRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+
+  bellIcon: {
+    margin: 12,
+    alignSelf: "center",
+    resizeMode: "contain",
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

@@ -1,8 +1,8 @@
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-
 import { useTheme } from "@/hooks/use-theme";
 import HomeScreen from "@/screens/HomeTab/HomeScreen";
 import ProductDetailsScreen from "@/screens/HomeTab/ProductDetailsScreen";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+
 import type { HomeStackParamList } from "./types";
 
 const Stack = createNativeStackNavigator<HomeStackParamList>();
