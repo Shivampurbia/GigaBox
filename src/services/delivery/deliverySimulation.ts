@@ -6,6 +6,7 @@ import type {
 
 export const DELIVERY_TICK_MS = 3000;
 const STATUS_DURATION_MS = 15000;
+export const ESTIMATED_DELIVERY_DURATION_MS = STATUS_DURATION_MS * 3;
 
 export const COURIER_START: Coordinate = {
   latitude: 37.8044,
