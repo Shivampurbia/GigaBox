@@ -1,6 +1,11 @@
-import { Stack } from "expo-router";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import { useAuth } from "@/auth/AuthProvider";
+import AuthNavigator from "./AuthNavigator";
+import MainNavigator from "./MainNavigator";
+import type { RootStackParamList } from "./types";
+
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function RootNavigator() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -10,13 +15,12 @@ export default function RootNavigator() {
   }
 
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Protected guard={!isAuthenticated}>
-        <Stack.Screen name="(auth)" />
-      </Stack.Protected>
-      <Stack.Protected guard={isAuthenticated}>
-        <Stack.Screen name="(main)" />
-      </Stack.Protected>
-    </Stack>
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      {isAuthenticated ? (
+        <Stack.Screen name="Main" component={MainNavigator} />
+      ) : (
+        <Stack.Screen name="Auth" component={AuthNavigator} />
+      )}
+    </Stack.Navigator>
   );
 }

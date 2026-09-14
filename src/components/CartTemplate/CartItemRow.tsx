@@ -1,5 +1,4 @@
 import { SymbolView } from "expo-symbols";
-import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, TextInput } from "react-native";
 
 import { ThemedText } from "@/components/themed-text";
@@ -21,20 +20,11 @@ export function CartItemRow({
   onQuantityChange,
   onRemove,
 }: Props) {
-  const [quantityDraft, setQuantityDraft] = useState(String(item.quantity));
-
-  useEffect(() => {
-    setQuantityDraft(String(item.quantity));
-  }, [item.quantity]);
-
-  const commitQuantity = () => {
-    const quantity = Number(quantityDraft);
+  const updateQuantity = (value: string) => {
+    const quantity = Number(value);
     if (Number.isFinite(quantity) && quantity > 0) {
       onQuantityChange(quantity);
-      return;
     }
-
-    setQuantityDraft(String(item.quantity));
   };
 
   return (
@@ -56,12 +46,10 @@ export function CartItemRow({
             </ThemedText>
           </Pressable>
           <TextInput
-            value={quantityDraft}
+            value={String(item.quantity)}
             keyboardType="number-pad"
             returnKeyType="done"
-            onChangeText={setQuantityDraft}
-            onSubmitEditing={commitQuantity}
-            onBlur={commitQuantity}
+            onChangeText={updateQuantity}
             style={styles.quantityInput}
           />
           <Pressable

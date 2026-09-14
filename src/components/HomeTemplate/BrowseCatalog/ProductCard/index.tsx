@@ -1,20 +1,22 @@
 // src/components/HomeTemplate/BrowseCatalog/ProductCard/index.ts
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
+import type { HomeStackParamList } from "@/navigation/types";
+import { useNavigation } from "@react-navigation/native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Image } from "expo-image";
-import { router } from "expo-router";
 import { Pressable, StyleSheet } from "react-native";
 import { Product } from "../../../../api/types/product.types";
 
 export function ProductCard({ product }: { product: Product }) {
+  const navigation =
+    useNavigation<NativeStackNavigationProp<HomeStackParamList>>();
+
   return (
     <Pressable
       style={({ pressed }) => [styles.card, pressed && styles.pressed]}
       onPress={() =>
-        router.push({
-          pathname: "/home/product/[id]",
-          params: { id: String(product.id) },
-        })
+        navigation.navigate("ProductDetails", { productId: product.id })
       }
     >
       <ThemedView type="backgroundElement" style={styles.surface}>

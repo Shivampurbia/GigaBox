@@ -1,46 +1,50 @@
 import { FlashList } from "@shopify/flash-list";
-import { ActivityIndicator, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 import { Product } from "@/api/types/product.types";
 import { ProductCard } from "@/components/HomeTemplate/BrowseCatalog/ProductCard";
-import { ThemedText } from "@/components/themed-text";
-import { ThemedView } from "@/components/themed-view";
+import { ScreenState } from "@/components/ScreenState";
 
 interface Props {
   products: Product[] | undefined;
   isPending: boolean;
   isError: boolean;
+  isOnline: boolean;
+  onRetry: () => void;
 }
 
-export function SearchResults({ products, isPending, isError }: Props) {
+export function SearchResults({
+  products,
+  isPending,
+  isError,
+  isOnline,
+  onRetry,
+}: Props) {
   if (isPending) {
-    return (
-      <ThemedView style={styles.state}>
-        <ActivityIndicator />
-        <ThemedText themeColor="textSecondary">Searching...</ThemedText>
-      </ThemedView>
-    );
+    return <ScreenState title="Searching products" loading />;
   }
 
   if (isError) {
     return (
-      <ThemedView style={styles.state}>
-        <ThemedText type="smallBold">Search failed</ThemedText>
-        <ThemedText themeColor="textSecondary">
-          Check your connection and try again.
-        </ThemedText>
-      </ThemedView>
+      <ScreenState
+        title="Search failed"
+        message="Check your connection and try again."
+        actionLabel={isOnline ? "Try again" : undefined}
+        onAction={isOnline ? onRetry : undefined}
+      />
     );
   }
 
   if (!products?.length) {
     return (
-      <ThemedView style={styles.state}>
-        <ThemedText type="smallBold">No products found</ThemedText>
-        <ThemedText themeColor="textSecondary">
-          Try a different search.
-        </ThemedText>
-      </ThemedView>
+      <ScreenState
+        title={isOnline ? "No products found" : "Search unavailable offline"}
+        message={
+          isOnline
+            ? "Try a different search."
+            : "Reconnect to search the catalog."
+        }
+      />
     );
   }
 
@@ -57,11 +61,4 @@ export function SearchResults({ products, isPending, isError }: Props) {
 
 const styles = StyleSheet.create({
   listContainer: { flex: 1 },
-  state: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    padding: 24,
-  },
 });

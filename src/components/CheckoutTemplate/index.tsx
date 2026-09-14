@@ -1,8 +1,8 @@
 import { ScrollView, StyleSheet } from "react-native";
 
 import type { CartItem } from "@/store/slices/cartSlice";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { ThemedText } from "../themed-text";
+import { ThemedView } from "../themed-view";
 import { DeliveryAddressSection } from "./DeliveryAddressSection";
 import { OrderSummarySection } from "./OrderSummarySection";
 import { PaymentMethodSection } from "./PaymentMethodSection";
@@ -28,7 +28,7 @@ export function CheckoutTemplate({
   onPlaceOrder,
 }: Props) {
   return (
-    <SafeAreaView style={styles.screen}>
+    <ThemedView style={styles.screen}>
       <ThemedText type="subtitle" style={styles.heading}>
         Checkout
       </ThemedText>
@@ -46,7 +46,7 @@ export function CheckoutTemplate({
         />
         <PlaceOrderButton onPlaceOrder={onPlaceOrder} />
       </ScrollView>
-    </SafeAreaView>
+    </ThemedView>
   );
 }
 
