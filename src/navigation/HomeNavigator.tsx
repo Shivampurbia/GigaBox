@@ -28,7 +28,7 @@ export default function HomeNavigator() {
       <Stack.Screen
         name="ProductDetails"
         component={ProductDetailsScreen}
-        options={{ title: "Product details" }}
+        options={{ title: "" }}
       />
     </Stack.Navigator>
   );

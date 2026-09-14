@@ -4,6 +4,7 @@ import { View } from "react-native";
 import { Product } from "../../../api/types/product.types";
 import { CategoryChips } from "./CategoryChips";
 import { ProductCard } from "./ProductCard";
+import { ProductCardSkeleton } from "./ProductCard/skeleton";
 
 interface Props {
   products: Product[];
@@ -37,18 +38,17 @@ export function BrowseCatalog({
         data={products}
         renderItem={({ item }) => <ProductCard product={item} />}
         numColumns={2}
-        onEndReachedThreshold={0.2}
+        onEndReachedThreshold={0.3}
         onEndReached={onEndReached}
         refreshing={isRefetching}
         onRefresh={refetch}
         ListFooterComponent={
-          // isFetchingNextPage ? (
-          //   <View style={{ flexDirection: "row" }}>
-          //     <ProductCardSkeleton />
-          //     <ProductCardSkeleton />
-          //   </View>
-          // ) :
-          null
+          isFetchingNextPage ? (
+            <View style={{ flexDirection: "row" }}>
+              <ProductCardSkeleton />
+              <ProductCardSkeleton />
+            </View>
+          ) : null
         }
       />
     </View>

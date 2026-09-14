@@ -1,14 +1,19 @@
-// src/components/HomeTemplate/BrowseCatalog/ProductCard/index.ts
+// src/components/HomeTemplate/BrowseCatalog/ProductCard/index.tsx
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import type { HomeStackParamList } from "@/navigation/types";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Image } from "expo-image";
+import { memo } from "react";
 import { Pressable, StyleSheet } from "react-native";
 import { Product } from "../../../../api/types/product.types";
 
-export function ProductCard({ product }: { product: Product }) {
+export const ProductCard = memo(function ProductCard({
+  product,
+}: {
+  product: Product;
+}) {
   const navigation =
     useNavigation<NativeStackNavigationProp<HomeStackParamList>>();
 
@@ -34,7 +39,7 @@ export function ProductCard({ product }: { product: Product }) {
       </ThemedView>
     </Pressable>
   );
-}
+});
 
 const styles = StyleSheet.create({
   card: {

@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { ActivityIndicator, StyleSheet, TextInput } from "react-native";
+import { StyleSheet, TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { HomeTemplate } from "@/components/HomeTemplate";
@@ -116,11 +116,11 @@ export default function HomeScreen() {
           isFetchingNextPage={catalogQuery.isFetchingNextPage}
         />
       )}
-      {catalogQuery.isFetching && !catalogQuery.isFetchingNextPage && (
+      {/* {catalogQuery.isFetching && !catalogQuery.isFetchingNextPage && (
         <ThemedView type="backgroundElement" style={styles.filterLoading}>
           <ActivityIndicator />
         </ThemedView>
-      )}
+      )} */}
     </SafeAreaView>
   );
 }
