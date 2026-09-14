@@ -14,7 +14,8 @@ async function configureDeliveryChannel() {
   if (Platform.OS === "android") {
     await Notifications.setNotificationChannelAsync("delivery-updates", {
       name: "Delivery updates",
-      importance: Notifications.AndroidImportance.DEFAULT,
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
     });
   }
 }

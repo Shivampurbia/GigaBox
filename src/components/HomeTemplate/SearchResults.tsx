@@ -20,7 +20,8 @@ export function SearchResults({
   isOnline,
   onRetry,
 }: Props) {
-  if (isPending) {
+  if (isPending && isOnline) {
+    console.log("[SearchResults] isPending and isOnline");
     return <ScreenState title="Searching products" loading />;
   }
 

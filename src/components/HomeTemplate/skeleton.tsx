@@ -4,7 +4,7 @@ import { BrowseCatalogSkeleton } from "./BrowseCatalog/skeleton";
 
 export function HomeTemplateSkeleton() {
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, paddingTop: 98 }}>
       <BrowseCatalogSkeleton />
     </View>
   );

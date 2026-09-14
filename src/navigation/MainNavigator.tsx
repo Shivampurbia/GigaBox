@@ -2,7 +2,6 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Image } from "react-native";
 
 import CartNavigator from "./CartNavigator";
-import ExploreNavigator from "./ExploreNavigator";
 import HomeNavigator from "./HomeNavigator";
 import type { MainTabParamList } from "./types";
 
@@ -24,23 +23,19 @@ export default function MainNavigator() {
           ),
         }}
       />
+
       <Tab.Screen
-        name="ExploreTab"
-        component={ExploreNavigator}
+        name="CartTab"
+        component={CartNavigator}
         options={{
-          title: "Explore",
+          title: "Cart",
           tabBarIcon: ({ color, size }) => (
             <Image
-              source={require("@/assets/images/tabIcons/explore.png")}
+              source={require("@/assets/images/tabIcons/cart.png")}
               style={{ width: size, height: size, tintColor: color }}
             />
           ),
         }}
-      />
-      <Tab.Screen
-        name="CartTab"
-        component={CartNavigator}
-        options={{ title: "Cart" }}
       />
     </Tab.Navigator>
   );

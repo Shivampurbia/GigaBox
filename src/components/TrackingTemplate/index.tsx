@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { Platform, StyleSheet } from "react-native";
 
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
@@ -15,7 +15,19 @@ export function TrackingTemplate({ tracking }: Props) {
       <ThemedView style={styles.screen}>
         <ThemedText type="subtitle">Track your order</ThemedText>
         <ThemedView style={styles.mapContainer}>
-          <TrackingMap tracking={tracking} />
+          {Platform.OS === "ios" ? (
+            <TrackingMap tracking={tracking} />
+          ) : (
+            <ThemedText
+              style={{
+                height: "100%",
+                textAlign: "center",
+                textAlignVertical: "center",
+              }}
+            >
+              Google Maps key is required for Android
+            </ThemedText>
+          )}
         </ThemedView>
         <TrackingStatus status={tracking.status} />
         <ThemedText themeColor="textSecondary">

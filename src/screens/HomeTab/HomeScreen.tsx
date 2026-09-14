@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { StyleSheet, TextInput } from "react-native";
+import { Platform, StyleSheet, TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { HomeTemplate } from "@/components/HomeTemplate";
@@ -101,7 +101,7 @@ export default function HomeScreen() {
           style={[styles.searchInput, { color: theme.text }]}
         />
       </ThemedView>
-      {searchTerm.trim().length > 0 ? (
+      {searchTerm.trim().length > 2 ? (
         <SearchResults
           products={searchQuery.data}
           isPending={searchQuery.isPending}
@@ -143,6 +143,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: Platform.OS === "android" ? 12 : 0,
   },
   searchContainer: {
     marginHorizontal: 12,

@@ -66,6 +66,7 @@ export async function searchProducts(
   searchTerm: string,
   signal?: AbortSignal,
 ): Promise<Product[]> {
+  console.log("[catalog] searchProducts", { searchTerm });
   const { data } = await apiClient.get<{ products: Product[] }>(
     "/products/search",
     { params: { q: searchTerm }, signal },

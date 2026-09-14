@@ -20,8 +20,8 @@ export function useProductSearchQuery(searchTerm: string) {
   return useQuery({
     queryKey: queryKeys.search(debouncedSearchTerm),
     queryFn: ({ signal }) => searchProducts(debouncedSearchTerm, signal),
-    enabled: debouncedSearchTerm.length > 0,
-    staleTime: 0,
+    enabled: debouncedSearchTerm.length > 2,
+    staleTime: 10000, // 10 seconds
     networkMode: "online",
   });
 }

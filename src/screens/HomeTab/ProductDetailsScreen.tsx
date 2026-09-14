@@ -88,13 +88,13 @@ export default function ProductDetailsScreen({ navigation, route }: Props) {
       content: {
         title: "Product Alert",
         body: `Check out the product: ${product.title}`,
-        priority: "high",
+
         data: { productId: product.id },
       },
       trigger: {
         type: SchedulableTriggerInputTypes.DATE,
         date: new Date(Date.now() + 5000),
-        channelId: "default",
+        channelId: "delivery-updates",
       },
     });
 

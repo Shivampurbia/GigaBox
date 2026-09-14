@@ -23,7 +23,7 @@ export default function App() {
   const colors = Colors[colorScheme === "dark" ? "dark" : "light"];
 
   useEffect(() => {
-    void prepareDeliveryNotifications();
+    prepareDeliveryNotifications();
   }, []);
 
   return (
