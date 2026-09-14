@@ -1,5 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+import { isValidTrackingUpdate } from "@/services/delivery/deliveryStateMachine";
+
 export interface Coordinate {
   latitude: number;
   longitude: number;
@@ -35,10 +37,17 @@ const trackingSlice = createSlice({
       state.byOrderId[action.payload.orderId] = action.payload;
     },
     updateTracking(state, action: PayloadAction<TrackingState>) {
-      state.byOrderId[action.payload.orderId] = action.payload;
+      const current = state.byOrderId[action.payload.orderId];
+      if (isValidTrackingUpdate(current, action.payload)) {
+        state.byOrderId[action.payload.orderId] = action.payload;
+      }
+    },
+    stopTracking(state, action: PayloadAction<string>) {
+      delete state.byOrderId[action.payload];
     },
   },
 });
 
-export const { startTracking, updateTracking } = trackingSlice.actions;
+export const { startTracking, stopTracking, updateTracking } =
+  trackingSlice.actions;
 export default trackingSlice.reducer;

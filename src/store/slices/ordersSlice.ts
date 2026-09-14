@@ -27,8 +27,17 @@ const ordersSlice = createSlice({
       state.orders.unshift(action.payload);
       state.activeOrderId = action.payload.id;
     },
+    markOrderDelivered(state, action: PayloadAction<string>) {
+      const order = state.orders.find((entry) => entry.id === action.payload);
+      if (order) {
+        order.status = "DELIVERED";
+      }
+      if (state.activeOrderId === action.payload) {
+        state.activeOrderId = null;
+      }
+    },
   },
 });
 
-export const { createOrder } = ordersSlice.actions;
+export const { createOrder, markOrderDelivered } = ordersSlice.actions;
 export default ordersSlice.reducer;
